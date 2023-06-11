@@ -26,7 +26,7 @@ namespace openCypherTranspiler.LogicalPlanner
         public Entity Entity { get; set; }
 
         /// <summary>
-        /// This function bind the data source to a given graph definitions
+        /// This function binds the data source to a given graph definitions
         /// </summary>
         /// <param name="graphDefinition"></param>
         public void Bind(IGraphSchemaProvider graphDefinition)
@@ -39,8 +39,8 @@ namespace openCypherTranspiler.LogicalPlanner
             string sourceEntityName = null;
             string sinkEntityName = null;
             ValueField nodeIdField = null;
-            ValueField edgeSrcIdField = null;
-            ValueField edgeSinkIdField = null;
+            List<ValueField> edgeSrcFields = new List<ValueField>(); //20230611-VM-Was = null;
+            List<ValueField> edgeSinkFields = new List<ValueField>(); //20230611-VM-Was = null;
 
             if (Entity is NodeEntity)
             {
@@ -90,12 +90,12 @@ namespace openCypherTranspiler.LogicalPlanner
                 entityUniqueName = edgeDef.Id;
                 sourceEntityName = edgeDef.SourceNodeId;
                 sinkEntityName = edgeDef.SinkNodeId;
-                edgeSrcIdField = new ValueField(edgeDef.SourceIdProperty.PropertyName, edgeDef.SourceIdProperty.DataType);
-                edgeSinkIdField = new ValueField(edgeDef.SinkIdProperty.PropertyName, edgeDef.SinkIdProperty.DataType);
+                edgeSrcFields.AddRange(edgeDef.SourceProperties.Select(p => new ValueField(p.PropertyName, p.DataType)));
+                edgeSinkFields.AddRange(edgeDef.SinkProperties.Select(p => new ValueField(p.PropertyName, p.DataType)));
 
                 properties.AddRange(edgeDef.Properties.Select(p => new ValueField(p.PropertyName, p.DataType)));
-                properties.Add(edgeSrcIdField);
-                properties.Add(edgeSinkIdField);
+                properties.AddRange(edgeSrcFields);
+                properties.AddRange(edgeSinkFields);
             }
 
             Debug.Assert(OutputSchema.Count == 1
@@ -108,8 +108,8 @@ namespace openCypherTranspiler.LogicalPlanner
             field.BoundSinkEntityName = sinkEntityName;
             field.EncapsulatedFields = properties;
             field.NodeJoinField = nodeIdField;
-            field.RelSourceJoinField = edgeSrcIdField;
-            field.RelSinkJoinField = edgeSinkIdField;
+            field.RelSourceJoinFields = edgeSrcFields;
+            field.RelSinkJoinFields = edgeSinkFields;
         }
 
         public override string ToString()

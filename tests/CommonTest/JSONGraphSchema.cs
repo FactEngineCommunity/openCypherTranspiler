@@ -69,18 +69,18 @@ namespace openCypherTranspiler.CommonTest
                             PropertyType = EntityProperty.PropertyDefinitionType.RegularProperty
 
                         })).ToList(),
-                    SourceIdProperty = new EntityProperty()
-                    {
-                        PropertyName = e.SourceIdProperty.PropertyName.ToString(),
-                        DataType = Type.GetType(e.SourceIdProperty.PropertyType.ToString()),
-                        PropertyType = EntityProperty.PropertyDefinitionType.NodeJoinKey
-                    },
-                    SinkIdProperty = new EntityProperty()
-                    {
-                        PropertyName = e.SinkIdProperty.PropertyName.ToString(),
-                        DataType = Type.GetType(e.SinkIdProperty.PropertyType.ToString()),
-                        PropertyType = EntityProperty.PropertyDefinitionType.NodeJoinKey
-                    },
+                    SourceProperties = new List<EntityProperty>(),
+                    //{
+                    //    PropertyName = e.SourceIdProperty.PropertyName.ToString(),
+                    //    DataType = Type.GetType(e.SourceIdProperty.PropertyType.ToString()),
+                    //    PropertyType = EntityProperty.PropertyDefinitionType.NodeJoinKey
+                    //},
+                    SinkProperties = new List<EntityProperty>(),
+                    //{
+                    //    PropertyName = e.SinkIdProperty.PropertyName.ToString(),
+                    //    DataType = Type.GetType(e.SinkIdProperty.PropertyType.ToString()),
+                    //    PropertyType = EntityProperty.PropertyDefinitionType.NodeJoinKey
+                    //},
                 });
             }
         }

@@ -70,8 +70,8 @@ namespace openCypherTranspiler.LogicalPlanner
             this.BoundSourceEntityName = fieldSrc.BoundSourceEntityName;
             this.BoundSinkEntityName = fieldSrc.BoundSinkEntityName;
             this.NodeJoinField = fieldSrc.NodeJoinField?.Clone() as ValueField;
-            this.RelSinkJoinField = fieldSrc.RelSinkJoinField?.Clone() as ValueField;
-            this.RelSourceJoinField = fieldSrc.RelSourceJoinField?.Clone() as ValueField;
+            this.RelSinkJoinFields = fieldSrc.RelSinkJoinFields?.Select(x => x.Clone() as ValueField).ToList(); //20260611-VM-Was-fieldSrc.RelSinkJoinField?.Clone() as ValueField;
+            this.RelSourceJoinFields = fieldSrc.RelSourceJoinFields?.Select(x => x.Clone() as ValueField).ToList();//20260611-VM-fieldSrc.RelSourceJoinField?.Clone() as ValueField;
             this.EncapsulatedFields = fieldSrc.EncapsulatedFields?.Select(f => f.Clone() as ValueField).ToList();
             _referencedFieldNames.Clear();
             this.AddReferenceFieldNames(fieldSrc.ReferencedFieldAliases?.ToList());
@@ -130,12 +130,12 @@ namespace openCypherTranspiler.LogicalPlanner
         /// <summary>
         /// The field name for the edge's source join key
         /// </summary>
-        public ValueField RelSourceJoinField { get; set; }
+        public IList<ValueField> RelSourceJoinFields { get; set; }
 
         /// <summary>
         /// The field name for the relationship's sink join key
         /// </summary>
-        public ValueField RelSinkJoinField { get; set; }
+        public IList<ValueField> RelSinkJoinFields { get; set; }
 
 
         public override string ToString()

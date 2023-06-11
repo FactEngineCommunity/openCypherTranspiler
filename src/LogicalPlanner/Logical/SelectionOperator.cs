@@ -99,12 +99,12 @@ namespace openCypherTranspiler.LogicalPlanner
                             LeftExpression = new QueryExpressionProperty()
                             {
                                 VariableName = c.RelAlias1,
-                                PropertyName = relEnt1.RelSourceJoinField.FieldAlias
+                                PropertyName = relEnt1.RelSourceJoinFields[0].FieldAlias
                             },
                             RightExpression = new QueryExpressionProperty()
                             {
                                 VariableName = c.RelAlias2,
-                                PropertyName = relEnt2.RelSourceJoinField.FieldAlias
+                                PropertyName = relEnt2.RelSourceJoinFields[0].FieldAlias
                             }
                         };
                         var condExpr2 = new QueryExpressionBinary()
@@ -113,12 +113,12 @@ namespace openCypherTranspiler.LogicalPlanner
                             LeftExpression = new QueryExpressionProperty()
                             {
                                 VariableName = c.RelAlias1,
-                                PropertyName = relEnt1.RelSinkJoinField.FieldAlias
+                                PropertyName = relEnt1.RelSinkJoinFields[0].FieldAlias
                             },
                             RightExpression = new QueryExpressionProperty()
                             {
                                 VariableName = c.RelAlias2,
-                                PropertyName = relEnt2.RelSinkJoinField.FieldAlias
+                                PropertyName = relEnt2.RelSinkJoinFields[0].FieldAlias
                             }
                         };
                         var binExpr = new QueryExpressionBinary()
@@ -195,7 +195,7 @@ namespace openCypherTranspiler.LogicalPlanner
                     }
                     else
                     {
-                        entity.AddReferenceFieldName(entity.RelSourceJoinField.FieldAlias);
+                        entity.AddReferenceFieldName(entity.RelSourceJoinFields[0].FieldAlias);
                     }
                 }
                 else if (fieldName != null)
