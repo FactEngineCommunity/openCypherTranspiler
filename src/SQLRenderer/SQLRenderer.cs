@@ -433,12 +433,19 @@ namespace openCypherTranspiler.SQLRenderer
                 for (int i = 0; i < ent.RelSourceJoinFields.Count; i++)
                 {
                     var srcJoinField = ent.RelSourceJoinFields[i];
-                    var sinkJoinField = ent.RelSinkJoinFields[i];
 
-                    edgeSrcIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, srcJoinField.FieldAlias);
-                    edgeSinkIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, sinkJoinField.FieldAlias);
+                    edgeSrcIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, srcJoinField.FieldAlias);                    
 
                     codeSnip.AppendLine(depth + 1, $"{(!isFirstRow ? ", " : " ")}{srcJoinField.FieldAlias} AS {edgeSrcIdJoinKeyName}");
+                    isFirstRow = false;
+                }
+
+                for (int i = 0; i < ent.RelSinkJoinFields.Count; i++)
+                {                 
+                    var sinkJoinField = ent.RelSinkJoinFields[i];
+                 
+                    edgeSinkIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, sinkJoinField.FieldAlias);
+
                     codeSnip.AppendLine(depth + 1, $", {sinkJoinField.FieldAlias} AS {edgeSinkIdJoinKeyName}");
                     isFirstRow = false;
                 }
@@ -538,16 +545,21 @@ namespace openCypherTranspiler.SQLRenderer
                     for (int i = 0; i < ent.RelSourceJoinFields.Count; i++)
                     {
                         var sourceJoinField = ent.RelSourceJoinFields[i];
-                        var sinkJoinField = ent.RelSinkJoinFields[i];
-
                         var edgeSrcIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, sourceJoinField.FieldAlias);
-                        var edgeSinkIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, sinkJoinField.FieldAlias);
 
                         codeSnip.AppendLine(depth + 1, $"{(!isFirstRow ? ", " : " ")}{(isFromLeft ? leftVar : rightVar)}.{edgeSrcIdJoinKeyName} AS {edgeSrcIdJoinKeyName}");
-                        codeSnip.AppendLine(depth + 1, $", {(isFromLeft ? leftVar : rightVar)}.{edgeSinkIdJoinKeyName} AS {edgeSinkIdJoinKeyName}");
-
                         isFirstRow = false;
                     }
+
+                    for (int i = 0; i < ent.RelSinkJoinFields.Count; i++)
+                    {
+                        var sinkJoinField = ent.RelSinkJoinFields[i];
+                        var edgeSinkIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, sinkJoinField.FieldAlias);
+                        
+                        codeSnip.AppendLine(depth + 1, $", {(isFromLeft ? leftVar : rightVar)}.{edgeSinkIdJoinKeyName} AS {edgeSinkIdJoinKeyName}");
+                        isFirstRow = false;
+                    }
+
                 }
             }
             // render selected properties (except key fields, which will always be rendered above)
@@ -614,7 +626,7 @@ namespace openCypherTranspiler.SQLRenderer
                                 nodeJoinKey = GetFieldNameForEntityField(joinKeyPair.NodeAlias, relSourceJoinField.FieldAlias);
 
                                 nodeOrRelJoinKey = GetFieldNameForEntityField(joinKeyPair.RelationshipOrNodeAlias, relSourceJoinField.FieldAlias);
-                                codeSnip.AppendLine(depth + 1, $"{(isFirstJoinCond ? "" : "AND ")}{varWithNode}.{nodeJoinKey} = {varWithRelOrNode}.{nodeOrRelJoinKey}");
+                                codeSnip.AppendLine(depth + 1, $"{(i == 0 ? "" : "AND ")}{varWithNode}.{nodeJoinKey} = {varWithRelOrNode}.{nodeOrRelJoinKey}");
                             }
                             //20230612-VM-Above was...
                             //nodeOrRelJoinKey = GetFieldNameForEntityField(joinKeyPair.RelationshipOrNodeAlias, varWithRelOrNodeEntity.RelSourceJoinFields[0].FieldAlias);
@@ -627,7 +639,7 @@ namespace openCypherTranspiler.SQLRenderer
                                 nodeJoinKey = GetFieldNameForEntityField(joinKeyPair.NodeAlias, relSinkJoinField.FieldAlias);
 
                                 nodeOrRelJoinKey = GetFieldNameForEntityField(joinKeyPair.RelationshipOrNodeAlias, relSinkJoinField.FieldAlias);
-                                codeSnip.AppendLine(depth + 1, $"{(isFirstJoinCond ? "" : "AND ")}{varWithNode}.{nodeJoinKey} = {varWithRelOrNode}.{nodeOrRelJoinKey}");
+                                codeSnip.AppendLine(depth + 1, $"{(i == 0 ? "" : "AND ")}{varWithNode}.{nodeJoinKey} = {varWithRelOrNode}.{nodeOrRelJoinKey}");
                             }
                             //20230612-VM-Above was...
                             //nodeOrRelJoinKey = GetFieldNameForEntityField(joinKeyPair.RelationshipOrNodeAlias, varWithRelOrNodeEntity.RelSinkJoinFields[0].FieldAlias);
@@ -663,6 +675,7 @@ namespace openCypherTranspiler.SQLRenderer
 
                                 nodeOrRelJoinKey = GetFieldNameForEntityField(joinKeyPair.RelationshipOrNodeAlias, nodeJoinField.FieldAlias);
                                 codeSnip.AppendLine(depth + 1, $"{(isFirstJoinCond ? "" : "AND ")}{varWithNode}.{nodeJoinKey} = {varWithRelOrNode}.{nodeOrRelJoinKey}");
+                                isFirstJoinCond = false; //20230612-VM-Added
                             }
                             //20230612-VM-Above was...
                             //nodeOrRelJoinKey = GetFieldNameForEntityField(joinKeyPair.RelationshipOrNodeAlias, varWithRelOrNodeEntity.NodeJoinField.FieldAlias);
