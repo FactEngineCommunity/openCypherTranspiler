@@ -191,12 +191,28 @@ namespace openCypherTranspiler.LogicalPlanner
                     // we can by default, for node, does count(d.id) instead, and edge does count(d._vertexId) instead
                     if (entity.Type == EntityField.EntityType.Node)
                     {
-                        entity.AddReferenceFieldName(entity.NodeJoinField.FieldAlias);
+                        foreach (var joinField in entity.NodeJoinFields)
+                        {
+                            entity.AddReferenceFieldName(joinField.FieldAlias);
+                        }
                     }
                     else
                     {
-                        entity.AddReferenceFieldName(entity.RelSourceJoinFields[0].FieldAlias);
+                        foreach (var joinField in entity.RelSourceJoinFields)
+                        {
+                            entity.AddReferenceFieldName(joinField.FieldAlias);
+                        }
                     }
+
+                    //20230612-VM-Above was...
+                    //if (entity.Type == EntityField.EntityType.Node)
+                    //{
+                    //    entity.AddReferenceFieldName(entity.NodeJoinFields[0].FieldAlias);
+                    //}
+                    //else
+                    //{
+                    //    entity.AddReferenceFieldName(entity.RelSourceJoinFields[0].FieldAlias);
+                    //}
                 }
                 else if (fieldName != null)
                 {

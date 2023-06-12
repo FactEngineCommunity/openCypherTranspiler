@@ -38,7 +38,7 @@ namespace openCypherTranspiler.LogicalPlanner
             string entityUniqueName;
             string sourceEntityName = null;
             string sinkEntityName = null;
-            ValueField nodeIdField = null;
+            List<ValueField> nodeIdFields = new List<ValueField>(); //20230612-VM-Was = null;
             List<ValueField> edgeSrcFields = new List<ValueField>(); //20230611-VM-Was = null;
             List<ValueField> edgeSinkFields = new List<ValueField>(); //20230611-VM-Was = null;
 
@@ -52,10 +52,14 @@ namespace openCypherTranspiler.LogicalPlanner
                 }
 
                 entityUniqueName = nodeDef.Id;
-                nodeIdField = new ValueField(nodeDef.NodeIdProperty.PropertyName, nodeDef.NodeIdProperty.DataType);
+
+                nodeIdFields = nodeDef.NodeIdProperties.Select(property => new ValueField(property.PropertyName, property.DataType)).ToList();
+                
+                //20230612-VM-Was...
+                //nodeIdField = new ValueField(nodeDef.NodeIdProperty.PropertyName, nodeDef.NodeIdProperty.DataType);
 
                 properties.AddRange(nodeDef.Properties.Select(p => new ValueField(p.PropertyName, p.DataType)));
-                properties.Add(nodeIdField);
+                properties.AddRange(nodeIdFields);
             }
             else
             {
@@ -107,7 +111,7 @@ namespace openCypherTranspiler.LogicalPlanner
             field.BoundSourceEntityName = sourceEntityName;
             field.BoundSinkEntityName = sinkEntityName;
             field.EncapsulatedFields = properties;
-            field.NodeJoinField = nodeIdField;
+            field.NodeJoinFields = nodeIdFields;
             field.RelSourceJoinFields = edgeSrcFields;
             field.RelSinkJoinFields = edgeSinkFields;
         }

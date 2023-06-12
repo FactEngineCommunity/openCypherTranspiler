@@ -32,23 +32,49 @@ namespace openCypherTranspiler.CommonTest
             foreach (var n in res.Nodes)
             {
                 var nodeName = n.Name.ToString();
-                var nodeDef = new NodeSchema()
+
+                NodeSchema nodeDef = new NodeSchema()
                 {
                     Name = nodeName,
                     Properties = (n.Properties?.ToObject<List<dynamic>>() as List<dynamic> ?? Enumerable.Empty<dynamic>())
-                        .Select(s => (new EntityProperty()
+                        .Select(s => new EntityProperty()
                         {
                             PropertyName = s.PropertyName.ToString(),
                             DataType = Type.GetType(s.PropertyType.ToString()),
                             PropertyType = EntityProperty.PropertyDefinitionType.RegularProperty
-                        })).ToList(),
-                    NodeIdProperty = new EntityProperty()
-                    {
-                        PropertyName = n.IdProperty.PropertyName.ToString(),
-                        DataType = Type.GetType(n.IdProperty.PropertyType.ToString()),
-                        PropertyType = EntityProperty.PropertyDefinitionType.NodeJoinKey
-                    },
+                        }).ToList(),
+                    NodeIdProperties = new List<EntityProperty>()
                 };
+
+                foreach (var idProperty in n.IdProperties)
+                {
+                    EntityProperty entityIdProperty = new EntityProperty()
+                    {
+                        PropertyName = idProperty.PropertyName.ToString(),
+                        DataType = Type.GetType(idProperty.PropertyType.ToString()),
+                        PropertyType = EntityProperty.PropertyDefinitionType.NodeJoinKey
+                    };
+                    nodeDef.NodeIdProperties.Add(entityIdProperty);
+                }
+
+                //20230612-VM-Was....NodeProperties now plural.
+                //var nodeDef = new NodeSchema()
+                //{
+                //    Name = nodeName,
+                //    Properties = (n.Properties?.ToObject<List<dynamic>>() as List<dynamic> ?? Enumerable.Empty<dynamic>())
+                //        .Select(s => (new EntityProperty()
+                //        {
+                //            PropertyName = s.PropertyName.ToString(),
+                //            DataType = Type.GetType(s.PropertyType.ToString()),
+                //            PropertyType = EntityProperty.PropertyDefinitionType.RegularProperty
+                //        })).ToList(),
+                //    NodeIdProperty = new EntityProperty()
+                //    {
+                //        PropertyName = n.IdProperty.PropertyName.ToString(),
+                //        DataType = Type.GetType(n.IdProperty.PropertyType.ToString()),
+                //        PropertyType = EntityProperty.PropertyDefinitionType.NodeJoinKey
+                //    },
+                //};
                 allnodes.Add(nodeName, nodeDef);
             }
             _allNodeDefinions = allnodes.Values.ToList();

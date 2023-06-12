@@ -69,7 +69,7 @@ namespace openCypherTranspiler.LogicalPlanner
             this.BoundEntityName = fieldSrc.BoundEntityName;
             this.BoundSourceEntityName = fieldSrc.BoundSourceEntityName;
             this.BoundSinkEntityName = fieldSrc.BoundSinkEntityName;
-            this.NodeJoinField = fieldSrc.NodeJoinField?.Clone() as ValueField;
+            this.NodeJoinFields = fieldSrc.NodeJoinFields?.Select(x => x.Clone() as ValueField).ToList(); //20230613-VM-Was fieldSrc.NodeJoinField?.Clone() as ValueField
             this.RelSinkJoinFields = fieldSrc.RelSinkJoinFields?.Select(x => x.Clone() as ValueField).ToList(); //20260611-VM-Was-fieldSrc.RelSinkJoinField?.Clone() as ValueField;
             this.RelSourceJoinFields = fieldSrc.RelSourceJoinFields?.Select(x => x.Clone() as ValueField).ToList();//20260611-VM-fieldSrc.RelSourceJoinField?.Clone() as ValueField;
             this.EncapsulatedFields = fieldSrc.EncapsulatedFields?.Select(f => f.Clone() as ValueField).ToList();
@@ -125,7 +125,7 @@ namespace openCypherTranspiler.LogicalPlanner
         /// <summary>
         /// The field name for the node's join key
         /// </summary>
-        public ValueField NodeJoinField { get; set; }
+        public IList<ValueField> NodeJoinFields { get; set; }
 
         /// <summary>
         /// The field name for the edge's source join key
