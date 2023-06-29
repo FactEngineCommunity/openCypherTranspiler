@@ -1,5 +1,10 @@
 ﻿# openCypherParser
 
+**IMPORTANT NOTES:** 
+
+     - The key, Parse, function is in OpenCypherParser.cs
+     - Produces the AST (Abstract Syntax Tree)
+
 The 'Grammar' sub-folder contains [ANTLR4](https://github.com/antlr) generated visitors using the g4 grammar file published by [openCypher project](http://www.opencypher.org/). 
 
 To regenerate the grammar file in the event of openCypher specification updates, please follow the steps below.
@@ -8,7 +13,7 @@ To regenerate the grammar file in the event of openCypher specification updates,
 
 Before building project, make sure you have:
 * Java 8 SDK. E.g. on Windows
-* Dotnet Core SDK 2.2
+* Dotnet (Core SDK 2.2)....Now .Net Framework I believe.
 * Latest ANTLR4 Tools (download and use [ANTLR4 tools](https://github.com/antlr/antlr4/blob/master/doc/getting-started.md))
 
 E.g. on Windows:
