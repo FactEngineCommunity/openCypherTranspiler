@@ -419,6 +419,15 @@ namespace openCypherTranspiler.SQLRenderer
                     codeSnip.AppendLine(depth + 1, $"{(!isFirstRow ? ", " : " ")}{nodeJoinField.FieldAlias} AS {nodeIdJoinKeyName}");
                     isFirstRow = false;
                 }
+
+                //20240503-VM-Added...because Need Link Sources that are ForeignKeyReferences.
+                foreach (var nodeJoinField in ent.RelSourceJoinFields)
+                {
+                    var nodeIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, nodeJoinField.FieldAlias);
+                    codeSnip.AppendLine(depth + 1, $"{(!isFirstRow ? ", " : " ")}{nodeJoinField.FieldAlias} AS {nodeIdJoinKeyName}");
+                    isFirstRow = false;
+                }
+
                 //20230612-Was-
                 //var nodeIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, ent.NodeJoinField.FieldAlias);
                 //codeSnip.AppendLine(depth + 1, $"{(!isFirstRow ? ", " : " ")}{ent.NodeJoinField.FieldAlias} AS {nodeIdJoinKeyName}");
@@ -466,7 +475,8 @@ namespace openCypherTranspiler.SQLRenderer
             if (ent.RelSourceJoinFields.Count > 0)
             {
                 lsSourceFieldAlias = ent.RelSourceJoinFields[0]?.FieldAlias;
-                lsSinkFieldAlias = ent.RelSinkJoinFields[0]?.FieldAlias;
+                //lsSinkFieldAlias = ent.RelSinkJoinFields[0]?.FieldAlias;
+                lsSinkFieldAlias = lsSourceFieldAlias; //20240503-VM-At this state, same as Source.
             }
 
             foreach (var field in ent.ReferencedFieldAliases
@@ -523,7 +533,7 @@ namespace openCypherTranspiler.SQLRenderer
                 Debug.Assert(isFromLeft || rightInEntityAliases.Contains(ent.FieldAlias));
                 if (ent.Type == EntityField.EntityType.Node)
                 {
-                    foreach (var nodeJoinField in ent.NodeJoinFields)
+                    foreach (var nodeJoinField in ent.NodeJoinFields) //joinOp.OutputSchema.RelationshipField.RelSourcJoinFields
                     {
                         var nodeIdJoinKeyName = GetFieldNameForEntityField(ent.FieldAlias, nodeJoinField.FieldAlias);
                         codeSnip.AppendLine(depth + 1, $"{(!isFirstRow ? ", " : " ")}{(isFromLeft ? leftVar : rightVar)}.{nodeIdJoinKeyName} AS {nodeIdJoinKeyName}");
@@ -1081,7 +1091,8 @@ namespace openCypherTranspiler.SQLRenderer
                 if (ent.RelSourceJoinFields.Count > 0)
                 {
                     lsSourceFieldAlias = ent.RelSourceJoinFields[0]?.FieldAlias;
-                    lsSinkFieldAlias = ent.RelSinkJoinFields[0]?.FieldAlias;
+                    lsSinkFieldAlias = lsSourceFieldAlias; //20240503-VM-At this stage, same as Source
+                    //lsSinkFieldAlias = ent.RelSinkJoinFields[0]?.FieldAlias; //20240503-VM-Removed because Sink fields are invariably PrimaryKeys and catered for. This may be wrong. Can revisit.
                 }
 
                 var nonNullJoinKeyValues = new string[]

@@ -54,7 +54,12 @@ namespace openCypherTranspiler.LogicalPlanner
                 entityUniqueName = nodeDef.Id;
 
                 nodeIdFields = nodeDef.NodeIdProperties.Select(property => new ValueField(property.PropertyName, property.DataType)).ToList();
-                
+
+                //20240504-VM-Added (Need fields on the Source side of a ForeignKeyRelationship.
+                edgeSrcFields = nodeDef.Properties
+                                        .Where(property => property.PropertyType == EntityProperty.PropertyDefinitionType.SourceNodeJoinKey)
+                                        .Select(property => new ValueField(property.PropertyName, property.DataType)).ToList();
+
                 //20230612-VM-Was...
                 //nodeIdField = new ValueField(nodeDef.NodeIdProperty.PropertyName, nodeDef.NodeIdProperty.DataType);
 

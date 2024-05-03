@@ -70,8 +70,8 @@ namespace openCypherTranspiler.LogicalPlanner
             this.BoundSourceEntityName = fieldSrc.BoundSourceEntityName;
             this.BoundSinkEntityName = fieldSrc.BoundSinkEntityName;
             this.NodeJoinFields = fieldSrc.NodeJoinFields?.Select(x => x.Clone() as ValueField).ToList(); //20230613-VM-Was fieldSrc.NodeJoinField?.Clone() as ValueField
-            this.RelSinkJoinFields = fieldSrc.RelSinkJoinFields?.Select(x => x.Clone() as ValueField).ToList(); //20260611-VM-Was-fieldSrc.RelSinkJoinField?.Clone() as ValueField;
-            this.RelSourceJoinFields = fieldSrc.RelSourceJoinFields?.Select(x => x.Clone() as ValueField).ToList();//20260611-VM-fieldSrc.RelSourceJoinField?.Clone() as ValueField;
+            this.RelSinkJoinFields = fieldSrc.RelSinkJoinFields?.Select(x => x.Clone() as ValueField).ToList(); //20230611-VM-Was-fieldSrc.RelSinkJoinField?.Clone() as ValueField;
+            this.RelSourceJoinFields = fieldSrc.RelSourceJoinFields?.Select(x => x.Clone() as ValueField).ToList();//20230611-VM-fieldSrc.RelSourceJoinField?.Clone() as ValueField;
             this.EncapsulatedFields = fieldSrc.EncapsulatedFields?.Select(f => f.Clone() as ValueField).ToList();
             _referencedFieldNames.Clear();
             this.AddReferenceFieldNames(fieldSrc.ReferencedFieldAliases?.ToList());
