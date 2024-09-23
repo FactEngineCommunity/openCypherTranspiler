@@ -707,7 +707,16 @@ namespace openCypherTranspiler.SQLRenderer
                                 var sourceJoinField = varWithRelOrNodeEntity.RelSourceJoinFields[i];
                                 var sinkJoinField = varWithRelOrNodeEntity.RelSinkJoinFields[i];
 
-                                nodeJoinKey = GetFieldNameForEntityField(joinKeyPair.NodeAlias, sinkJoinField.FieldAlias);
+                                //2024-09-24-VM-Probably need to get joinOp.InputSchema.RelationshipField.EntityName (NB Is currently the GraphLabel (e.g. 'IS_SHOW_AT' for Film IS SHOWING AT Cinema), but should be the name of the Entity/NodeType, 'Session').
+                                //...because is currently producing, '__film_Cinema_Id', when should be producing '__session_Cinema_Id'.
+                                //20240-09-24-Ignore above. Get sourceJoinField.FieldAlias
+                                if (isSrc) {
+                                    nodeJoinKey = GetFieldNameForEntityField(joinKeyPair.NodeAlias, sourceJoinField.FieldAlias); //2024-09-22-Was sinkJoinField.FieldAlias
+                                } else
+                                {
+                                    nodeJoinKey = GetFieldNameForEntityField(joinKeyPair.NodeAlias, sinkJoinField.FieldAlias);
+                                }
+                                
 
                                 nodeOrRelJoinKey = GetFieldNameForEntityField(joinKeyPair.RelationshipOrNodeAlias, isSrc ? sourceJoinField.FieldAlias : sinkJoinField.FieldAlias);
                                 codeSnip.AppendLine(depth + 1, $"{(i == 0 ? "" : "AND ")}{varWithNode}.{nodeJoinKey} = {varWithRelOrNode}.{nodeOrRelJoinKey}");
@@ -1040,7 +1049,7 @@ namespace openCypherTranspiler.SQLRenderer
             // extra debug check: schema has not changed by selection operator (which should have been guaranteed by logical pan)
             Debug.Assert(preCond == null || preCond.InputSchema.Count == preCond.OutputSchema.Count && preCond.OutputSchema.Count == prjOp.InputSchema.Count);
 
-            codeSnip.AppendLine(depth, $"SELECT{(prjOp.IsDistinct ? " DISTINCT" : "")}{(topXVal.HasValue ? $" TOP {topXVal.Value}" : "")}");
+            codeSnip.AppendLine(depth, $"SELECT{(prjOp.IsDistinct ? " DISTINCT" : "")}");
 
             // project entities and flow the join keys
             // do group by if any aggregation functions used
@@ -1173,6 +1182,9 @@ namespace openCypherTranspiler.SQLRenderer
             {
                 codeSnip.Append(RenderOrderbyClause(preCond.OrderByExpressions, preCond, depth));
             }
+
+                //LIMIT
+                codeSnip.Append($"{(topXVal.HasValue ? $" LIMIT {topXVal.Value}" : "")}");
 
             return codeSnip.ToString();
         }
